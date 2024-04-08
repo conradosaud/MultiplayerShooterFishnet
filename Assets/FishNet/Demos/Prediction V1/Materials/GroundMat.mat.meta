@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0bb31cf72dfcef449a1a4a5aab857f63
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 207815
+  packageName: 'Fish-Net: Networking Evolved'
+  packageVersion: 4.1.6R
+  assetPath: Assets/FishNet/Demos/Prediction V1/Materials/GroundMat.mat
+  uploadId: 654179

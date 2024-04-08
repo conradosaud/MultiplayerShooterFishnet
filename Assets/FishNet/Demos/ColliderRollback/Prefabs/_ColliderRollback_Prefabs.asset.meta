@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d9693011b7416444aa06cafe900e23c0
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 207815
+  packageName: 'Fish-Net: Networking Evolved'
+  packageVersion: 4.1.6R
+  assetPath: Assets/FishNet/Demos/ColliderRollback/Prefabs/_ColliderRollback_Prefabs.asset
+  uploadId: 654179

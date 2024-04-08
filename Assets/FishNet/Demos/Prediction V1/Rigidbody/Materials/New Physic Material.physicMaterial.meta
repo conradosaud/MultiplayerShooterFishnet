@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2315b89c915a21c40982b5867ff7d343
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 13400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 207815
+  packageName: 'Fish-Net: Networking Evolved'
+  packageVersion: 4.1.6R
+  assetPath: Assets/FishNet/Demos/Prediction V1/Rigidbody/Materials/New Physic Material.physicMaterial
+  uploadId: 654179

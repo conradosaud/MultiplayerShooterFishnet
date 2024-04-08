@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 23d8c720c2338a54c9787668c81290f6
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 207815
+  packageName: 'Fish-Net: Networking Evolved'
+  packageVersion: 4.1.6R
+  assetPath: Assets/FishNet/Demos/Prediction V1/Transform/TransformPrediction.unity
+  uploadId: 654179

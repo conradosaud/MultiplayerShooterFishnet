@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: f820efff6a2871447b961fc755212ba3
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 207815
+  packageName: 'Fish-Net: Networking Evolved'
+  packageVersion: 4.1.6R
+  assetPath: Assets/FishNet/Demos/Prediction V1/Transform/Prefabs/TransformPrediction.prefab
+  uploadId: 654179
