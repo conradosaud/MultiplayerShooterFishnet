@@ -32,6 +32,7 @@ public class PlayerController : NetworkBehaviour
     Camera playerCamera;
     Vector3 moveDirection = Vector3.zero;
 
+
     public override void OnStartClient()
     {
         base.OnStartClient();
@@ -79,11 +80,6 @@ public class PlayerController : NetworkBehaviour
             Server_Shoot(cameraDirection, LocalConnection);
         }
 
-        if( Input.GetKeyDown(KeyCode.V))
-        {
-            HUDController.lifeText.text = "opaa";
-        }
-
         // Directions
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
@@ -127,9 +123,11 @@ public class PlayerController : NetworkBehaviour
     {
 
         Transform instantiated = Instantiate(bulletPrefab, bulletPoint.position, Quaternion.Euler(cameraDirection));
+        instantiated.transform.parent = GameObject.Find("BulletPool").transform;
         instantiated.GetComponent<Bullet>().direction = cameraDirection;
+        instantiated.GetComponent<Bullet>().clientId = conn.ClientId;
 
-        ServerManager.Spawn(instantiated.gameObject);
+        Spawn(instantiated.gameObject);
 
         // Aguarda o tempo aqui pois não é possível usar IEnumerator no TargetRPC
         StartCoroutine(ResetShoot(conn));
@@ -154,19 +152,23 @@ public class PlayerController : NetworkBehaviour
 
     }
 
-    [ServerRpc]
+ 
     public void TakeDamage()
     {
-        Debug.Log("Reduziu a vida...");
+        if (!base.IsOwner)
+            return;
         healthPoints--;
         HUDController.lifeText.text = healthPoints.ToString();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent<Bullet>(out Bullet bullet))
+        return;
+        if (!base.IsOwner)
+            return;
+
+        if (other.TryGetComponent<Bullet>(out Bullet bullet) )
         {
-            Debug.Log("acertô");
             TakeDamage();
             bullet.Server_DestroyBullet();
         }
