@@ -1,25 +1,23 @@
-using FishNet;
-using FishNet.Connection;
-using FishNet.Object;
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerController : NetworkBehaviour
 {
 
+
     public Transform bulletPrefab;
     public Transform bulletPoint;
+
+    public float healthPoints;
 
     public float shootFrequency = 0.2f;
     bool canShoot = true;
 
-    public float healthPoints = 5;
-
     public float moveSpeed = 5.0f;
-    public float turnSpeed = 5f; 
+    public float turnSpeed = 5f;
     public float jumpForce = 5.0f;
     public float jumpTime = 1.5f;
 
@@ -28,18 +26,20 @@ public class PlayerController : NetworkBehaviour
 
     float rotationX = 0;
 
-    CharacterController cc;
-    Camera playerCamera;
     Vector3 moveDirection = Vector3.zero;
+
+    Camera playerCamera;
+    CharacterController cc;
 
 
     public override void OnStartClient()
     {
         base.OnStartClient();
 
-        if( base.IsOwner)
+        if (base.isLocalPlayer)
         {
-            IniciaController();
+            cc = GetComponent<CharacterController>();
+            playerCamera = transform.Find("Main Camera").GetComponent<Camera>();
         }
         else
         {
@@ -49,23 +49,9 @@ public class PlayerController : NetworkBehaviour
 
     }
 
-    void IniciaController()
-    {
-        cc = GetComponent<CharacterController>();
-        playerCamera = transform.Find("Main Camera").GetComponent<Camera>();
-
-        // Lock camera
-        // Desabilitar para facilitar o desenvolvimento
-        //Cursor.lockState = CursorLockMode.Locked;
-        //Cursor.visible = false;
-
-    }
-
-
     void Update()
     {
-
-        if (!base.IsOwner)
+        if (!isLocalPlayer)
             return;
 
         // Inputs
@@ -73,11 +59,11 @@ public class PlayerController : NetworkBehaviour
         float directionZ = Input.GetAxis("Vertical");
         float directionY = moveDirection.y;
 
-        if( Input.GetKey(KeyCode.Mouse0) && canShoot )
+        if (Input.GetKey(KeyCode.Mouse0) && canShoot)
         {
             Vector3 cameraDirection = playerCamera.transform.forward;
             canShoot = false;
-            Server_Shoot(cameraDirection, LocalConnection);
+            Server_Shoot(cameraDirection);
         }
 
         // Directions
@@ -89,7 +75,7 @@ public class PlayerController : NetworkBehaviour
         moveDirection *= moveSpeed;
 
         // Player jump
-        if( Input.GetKeyDown(KeyCode.Space) && cc.isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space) && cc.isGrounded)
         {
             moveDirection.y = jumpForce;
         }
@@ -111,68 +97,39 @@ public class PlayerController : NetworkBehaviour
 
     }
 
-    [TargetRpc]
-    void ResetShoot(NetworkConnection conn)
-    {
-        canShoot = true;
-    }
 
-
-    [ServerRpc]
-    void Server_Shoot(Vector3 cameraDirection, NetworkConnection conn)
+    [Command]
+    void Server_Shoot(Vector3 cameraDirection)
     {
 
         Transform instantiated = Instantiate(bulletPrefab, bulletPoint.position, Quaternion.Euler(cameraDirection));
         instantiated.transform.parent = GameObject.Find("BulletPool").transform;
         instantiated.GetComponent<Bullet>().direction = cameraDirection;
-        instantiated.GetComponent<Bullet>().clientId = conn.ClientId;
 
-        Spawn(instantiated.gameObject);
+        NetworkServer.Spawn(instantiated.gameObject);
+        //Spawn(instantiated.gameObject);
 
         // Aguarda o tempo aqui pois não é possível usar IEnumerator no TargetRPC
-        StartCoroutine(ResetShoot(conn));
+        StartCoroutine(ResetShoot(connectionToClient));
         IEnumerator ResetShoot(NetworkConnection conn)
         {
             yield return new WaitForSeconds(shootFrequency);
             this.ResetShoot(conn);
         }
 
-        // Outra forma de realizar o tiro, com Raycast, mas sem projétil na scene
-        void ShootRaycast()
-        {
-
-            Vector3 position = playerCamera.transform.position;
-            Vector3 direction = playerCamera.transform.forward;
-
-            if (Physics.Raycast(position, direction, out RaycastHit hit))
-            {
-                Debug.Log(hit.transform.gameObject.name);
-            }
-        }
-
     }
 
- 
+    [TargetRpc]
+    void ResetShoot(NetworkConnection conn)
+    {
+        canShoot = true;
+    }
+
+    [Command(requiresAuthority = false)]
     public void TakeDamage()
     {
-        if (!base.IsOwner)
-            return;
         healthPoints--;
-        HUDController.lifeText.text = healthPoints.ToString();
+        HUDManager.lifeText.text = healthPoints.ToString();
     }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        return;
-        if (!base.IsOwner)
-            return;
-
-        if (other.TryGetComponent<Bullet>(out Bullet bullet) )
-        {
-            TakeDamage();
-            bullet.Server_DestroyBullet();
-        }
-    }
-
 
 }

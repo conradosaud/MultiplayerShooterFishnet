@@ -1,6 +1,4 @@
-using FishNet;
-using FishNet.Managing.Server;
-using FishNet.Object;
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,16 +9,17 @@ public class Bullet : NetworkBehaviour
     public float velocity = 5f;
     public float lifeTime = 3f;
     public Vector3 direction;
-    public int clientId;
 
-    private void Start()
+    // Start is called before the first frame update
+    void Start()
     {
         Invoke("DestroyLifetime", lifeTime);
     }
 
+    // Update is called once per frame
     void Update()
     {
-        GetComponent<Rigidbody>().velocity = direction * velocity;        
+        GetComponent<Rigidbody>().velocity = direction * velocity;
     }
 
     void DestroyLifetime()
@@ -29,20 +28,24 @@ public class Bullet : NetworkBehaviour
         //Destroy(gameObject);
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if( other.TryGetComponent<PlayerController>(out PlayerController playerController))
-        {
-            playerController.TakeDamage();
-            Server_DestroyBullet();
-        }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
+    [Command(requiresAuthority = false)]
     public void Server_DestroyBullet()
     {
         Debug.Log("Destróido");
-        Despawn();
+        //NetworkServer.UnSpawn(gameObject);
+        Destroy(gameObject);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+
+        Debug.Log("acertou alguem...");
+        if( other.TryGetComponent<PlayerController>(out PlayerController playerController))
+        {
+            playerController.TakeDamage();
+        }
+
+        Server_DestroyBullet();
     }
 
 }
