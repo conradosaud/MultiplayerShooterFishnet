@@ -7,24 +7,26 @@ using UnityEngine;
 
 public class GameManager : NetworkBehaviour
 {
+
+    public static GameManager instance;
     public readonly SyncList<GameObject> players = new();
 
-    List<string> names = new List<string>(){
-        "SombraMatadora", "Blitzkrieg", "Ceifador", "Ghost", "VíboraCobra",
-        "Guerra", "Tempestade", "RaioTrovão", "Trovador","PunhoDeFerro"
-    };
-
-    [ServerRpc(RequireOwnership = false)]
-    public void AddPlayer(GameObject player)
+    private void Awake()
     {
-        player.name = GenerateName();
-        players.Add(player);
+        instance = this;
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void RemovePlayer(GameObject player)
+    List<string> names = new List<string>(){
+        "Sombra", "Blitzkrieg", "Waifu", "Ghost", "VíboraCobra",
+        "MagoDeEspada", "Tempestade", "RaioTrovão", "Zeus","PunhoDeFerro"
+    };
+
+    public string AddPlayer(GameObject player)
     {
-        players.Remove(player);
+        string name = GenerateName();
+        player.name = name;
+        instance.players.Add(player);
+        return name;
     }
 
     string GenerateName()

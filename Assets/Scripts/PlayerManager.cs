@@ -1,4 +1,5 @@
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,24 +12,22 @@ public class PlayerManager : NetworkBehaviour
     {
         base.OnStartClient();
 
-
-        if ( IsOwner )
-            GameObject.Find("GameManager").GetComponent<GameManager>().AddPlayer(gameObject);
-
-        
-        //HUDController.UpdateUserboard();
-
-        Debug.Log(GameObject.Find("GameManager").GetComponent<GameManager>().players.Count);
+        if (IsOwner)
+            AddPlayer();
     }
 
-    public override void OnStopClient()
+    [ServerRpc]
+    void AddPlayer()
     {
-        base.OnStopClient();
+        string name = GameManager.instance.AddPlayer(gameObject);
+        transform.GetComponent<PlayerController>().username = name;
+        UpdateUserboard();
+    }
 
-        if( IsOwner )
-            GameObject.Find("GameManager").GetComponent<GameManager>().RemovePlayer(gameObject);
-
-        //HUDController.UpdateUserboard();
+    [ObserversRpc]
+    void UpdateUserboard()
+    {
+        HUDController.instance.UpdateUserboard();
     }
 
 }

@@ -11,6 +11,8 @@ using UnityEngine;
 public class PlayerController : NetworkBehaviour
 {
 
+    public string username = "Default";
+
     public Transform bulletPrefab;
     public Transform bulletPoint;
 

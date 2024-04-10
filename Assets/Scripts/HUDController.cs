@@ -3,33 +3,35 @@ using FishNet.Connection;
 using FishNet.Managing.Object;
 using FishNet.Managing.Server;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class HUDController : NetworkBehaviour
+public class HUDController : MonoBehaviour
 {
 
-    public static GameManager gameManager;
+    public static HUDController instance;
+
     public static TextMeshProUGUI lifeText;
     public static RectTransform userboard;
     public static TextMeshProUGUI playerNames;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        instance = this;
+
         lifeText = transform.Find("Life").GetComponent<TextMeshProUGUI>();
         userboard = transform.Find("Userboard").GetComponent<RectTransform>();
         playerNames = userboard.Find("PlayerNames").GetComponent<TextMeshProUGUI>();
     }
 
-    [ObserversRpc]
+
     public void UpdateUserboard()
     {
         playerNames.text = "<b>Players:</b>";
-        foreach (GameObject player in gameManager.players)
+        foreach (GameObject player in GameManager.instance.players)
         {
             playerNames.text += "<br>"+player.name;
         }
