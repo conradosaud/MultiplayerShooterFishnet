@@ -31,9 +31,9 @@ public class HUDController : MonoBehaviour
     public void UpdateUserboard()
     {
         playerNames.text = "<b>Players:</b>";
-        foreach (GameObject player in GameManager.instance.players)
+        foreach (string playerName in GameManager.instance.playerNames)
         {
-            playerNames.text += "<br>"+player.name;
+            playerNames.text += "<br>"+playerName;
         }
     }
 

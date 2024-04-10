@@ -11,8 +11,6 @@ using UnityEngine;
 public class PlayerController : NetworkBehaviour
 {
 
-    public string username = "Default";
-
     public Transform bulletPrefab;
     public Transform bulletPoint;
 
@@ -43,11 +41,6 @@ public class PlayerController : NetworkBehaviour
         {
             IniciaController();
         }
-        else
-        {
-            GetComponent<PlayerController>().enabled = false;
-            transform.Find("Main Camera").gameObject.SetActive(false);
-        }
 
     }
 
@@ -55,6 +48,7 @@ public class PlayerController : NetworkBehaviour
     {
         cc = GetComponent<CharacterController>();
         playerCamera = transform.Find("Main Camera").GetComponent<Camera>();
+        playerCamera.gameObject.SetActive(true);
         gameObject.name += "-" + Owner.ClientId;
 
         // Lock camera
@@ -80,7 +74,7 @@ public class PlayerController : NetworkBehaviour
         {
             Vector3 cameraDirection = playerCamera.transform.forward;
             canShoot = false;
-            Server_Shoot(cameraDirection, LocalConnection);
+            Server_Shoot(cameraDirection, Owner);
         }
 
         if( Input.GetKeyDown(KeyCode.V))
@@ -125,14 +119,13 @@ public class PlayerController : NetworkBehaviour
         canShoot = true;
     }
 
-
     [ServerRpc]
     void Server_Shoot(Vector3 cameraDirection, NetworkConnection conn)
     {
 
         Transform instantiated = Instantiate(bulletPrefab, bulletPoint.position, Quaternion.Euler(cameraDirection));
         instantiated.GetComponent<Bullet>().direction = cameraDirection;
-
+        
         ServerManager.Spawn(instantiated.gameObject);
 
         // Aguarda o tempo aqui pois não é possível usar IEnumerator no TargetRPC

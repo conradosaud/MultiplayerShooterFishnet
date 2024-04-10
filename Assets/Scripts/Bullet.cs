@@ -13,9 +13,11 @@ public class Bullet : NetworkBehaviour
     public float lifeTime = 3f;
     public Vector3 direction;
 
+    
     private void Start()
     {
-        Invoke("DestroyLifetime", lifeTime);
+        
+        Invoke("Server_DestroyBullet", lifeTime);
     }
 
     void Update()
@@ -23,33 +25,24 @@ public class Bullet : NetworkBehaviour
         GetComponent<Rigidbody>().velocity = direction * velocity;        
     }
 
-    void DestroyLifetime()
-    {
-        Server_DestroyBullet();
-        //Destroy(gameObject);
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent<PlayerController>(out PlayerController playerController))
         {
-            playerController.TakeDamage(playerController);
+            
+                Debug.Log(playerController.ClientManager.Connection.ToString());
+                Debug.Log(base.Owner.ToString());
+                playerController.TakeDamage(playerController);
         }
 
-        Server_DestroyBullet();
+        if( base.IsOwner)
+            Server_DestroyBullet();
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    
     public void Server_DestroyBullet()
     {
-        InstanceFinder.ServerManager.Despawn(gameObject);
-        DestroyInstance();
-    }
-
-    [ObserversRpc]
-    public void DestroyInstance()
-    {
-        Destroy(gameObject);
+        base.Despawn(gameObject);
     }
 
 }

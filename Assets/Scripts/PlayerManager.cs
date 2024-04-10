@@ -8,23 +8,20 @@ using UnityEngine;
 public class PlayerManager : NetworkBehaviour
 {
 
-    public override void OnStartClient()
+    public override void OnStartServer()
     {
-        base.OnStartClient();
-
-        if (IsOwner)
-            AddPlayer();
+        base.OnStartServer();
+        AddPlayer();
     }
 
-    [ServerRpc]
+    [Server]
     void AddPlayer()
     {
-        string name = GameManager.instance.AddPlayer(gameObject);
-        transform.GetComponent<PlayerController>().username = name;
+        GameManager.instance.AddPlayerName(gameObject);
         UpdateUserboard();
     }
 
-    [ObserversRpc]
+    [ObserversRpc(BufferLast = true)]
     void UpdateUserboard()
     {
         HUDController.instance.UpdateUserboard();

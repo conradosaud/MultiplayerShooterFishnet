@@ -233,9 +233,9 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
+  - {fileID: -8613451464245992173}
   - {fileID: 6683837507133148446}
   - {fileID: 6505725881717820641}
-  - {fileID: -8613451464245992173}
   <SerializedRootNetworkBehaviour>k__BackingField: {fileID: 0}
   <NestedRootNetworkBehaviours>k__BackingField: []
   SerializedTransformProperties:
@@ -265,7 +265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2836e36774ca1c4bbbee976e17b649c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 2
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: -1395596218863366931}
   _networkObjectCache: {fileID: -1395596218863366931}
   _componentConfiguration: 0
@@ -310,7 +310,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9b3e7d7ce8a4534a801d03b3c5618ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 0
+  _componentIndexCache: 1
   _addedNetworkObject: {fileID: -1395596218863366931}
   _networkObjectCache: {fileID: -1395596218863366931}
 --- !u!114 &6505725881717820641
@@ -325,7 +325,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fd3e3236ccdc174f9e072a82b26f332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 1
+  _componentIndexCache: 2
   _addedNetworkObject: {fileID: -1395596218863366931}
   _networkObjectCache: {fileID: -1395596218863366931}
   bulletPrefab: {fileID: 1829627821863855505, guid: 5329e187a48f45849af10c6aae19d6f9, type: 3}
@@ -602,7 +602,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1636543337530502269
 Transform:
   m_ObjectHideFlags: 0

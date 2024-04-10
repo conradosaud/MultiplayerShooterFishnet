@@ -9,7 +9,7 @@ public class GameManager : NetworkBehaviour
 {
 
     public static GameManager instance;
-    public readonly SyncList<GameObject> players = new();
+    public readonly SyncList<string> playerNames = new();
 
     private void Awake()
     {
@@ -21,22 +21,22 @@ public class GameManager : NetworkBehaviour
         "MagoDeEspada", "Tempestade", "RaioTrovão", "Zeus","PunhoDeFerro"
     };
 
-    public string AddPlayer(GameObject player)
+    public void AddPlayerName(GameObject player)
     {
         string name = GenerateName();
         player.name = name;
-        instance.players.Add(player);
-        return name;
+        playerNames.Add(name);
     }
 
     string GenerateName()
     {
-        string name = names[Random.Range(0, names.Count)];
-        foreach (GameObject player in players)
+        string name;
+        do
         {
-            if (player.name == name)
-                GenerateName();
-        }
+            name = names[Random.Range(0, names.Count)];
+        } 
+        while (playerNames.Contains(name));
+
         return name;
     }
 
