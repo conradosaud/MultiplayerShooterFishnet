@@ -1,4 +1,5 @@
 using FishNet;
+using FishNet.Connection;
 using FishNet.Managing.Server;
 using FishNet.Object;
 using System.Collections;
@@ -28,22 +29,27 @@ public class Bullet : NetworkBehaviour
         //Destroy(gameObject);
     }
 
-    //private void OnTriggerEnter(Collider other)
-    //{
-    //    if( other.CompareTag("Player") ){
-    //        //if( other.GetComponent<PlayerController>().IsOwner )
-    //            other.GetComponent<PlayerController>().TakeDamage();
-    //    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.TryGetComponent<PlayerController>(out PlayerController playerController))
+        {
+            playerController.TakeDamage(playerController);
+        }
 
-    //    Server_DestroyBullet();
-    //    //Destroy(gameObject);
-    //}
+        Server_DestroyBullet();
+    }
 
     [ServerRpc(RequireOwnership = false)]
     public void Server_DestroyBullet()
     {
-        Debug.Log("Destróido");
-        ServerManager.Despawn(gameObject);
+        InstanceFinder.ServerManager.Despawn(gameObject);
+        DestroyInstance();
+    }
+
+    [ObserversRpc]
+    public void DestroyInstance()
+    {
+        Destroy(gameObject);
     }
 
 }

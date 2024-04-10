@@ -4,6 +4,7 @@ using FishNet.Object;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -52,6 +53,7 @@ public class PlayerController : NetworkBehaviour
     {
         cc = GetComponent<CharacterController>();
         playerCamera = transform.Find("Main Camera").GetComponent<Camera>();
+        gameObject.name += "-" + Owner.ClientId;
 
         // Lock camera
         // Desabilitar para facilitar o desenvolvimento
@@ -139,38 +141,19 @@ public class PlayerController : NetworkBehaviour
             this.ResetShoot(conn);
         }
 
-        // Outra forma de realizar o tiro, com Raycast, mas sem projétil na scene
-        void ShootRaycast()
-        {
-
-            Vector3 position = playerCamera.transform.position;
-            Vector3 direction = playerCamera.transform.forward;
-
-            if (Physics.Raycast(position, direction, out RaycastHit hit))
-            {
-                Debug.Log(hit.transform.gameObject.name);
-            }
-        }
-
     }
 
-    [ServerRpc]
-    public void TakeDamage()
+    [ServerRpc(RequireOwnership = false)]
+    public void TakeDamage(PlayerController script)
     {
-        Debug.Log("Reduziu a vida...");
-        healthPoints--;
-        HUDController.lifeText.text = healthPoints.ToString();
+        script.healthPoints--;
+        UpdateLifeDisplay(script.Owner, script.healthPoints.ToString());
     }
 
-    private void OnTriggerEnter(Collider other)
+    [TargetRpc]
+    void UpdateLifeDisplay(NetworkConnection conn, string value)
     {
-        if (other.TryGetComponent<Bullet>(out Bullet bullet))
-        {
-            Debug.Log("acertô");
-            TakeDamage();
-            bullet.Server_DestroyBullet();
-        }
+        HUDController.lifeText.text = value;
     }
-
 
 }
