@@ -330,7 +330,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: -1395596218863366931}
   bulletPrefab: {fileID: 1829627821863855505, guid: 5329e187a48f45849af10c6aae19d6f9, type: 3}
   bulletPoint: {fileID: 4904476487911599181}
-  shootFrequency: 0.2
+  shootFrequency: 0.3
   healthPoints: 5
   moveSpeed: 5
   turnSpeed: 2.5

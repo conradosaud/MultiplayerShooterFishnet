@@ -2,6 +2,7 @@ using FishNet;
 using FishNet.Connection;
 using FishNet.Managing.Server;
 using FishNet.Object;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,37 +10,42 @@ using UnityEngine;
 public class Bullet : NetworkBehaviour
 {
 
+    public GameObject origin;
+
     public float velocity = 5f;
     public float lifeTime = 3f;
     public Vector3 direction;
 
-    
-    private void Start()
+    public override void OnStartServer()
     {
-        
+        base.OnStartServer();
+
+        GetComponent<Rigidbody>().velocity = direction * velocity;
         Invoke("Server_DestroyBullet", lifeTime);
     }
 
-    void Update()
-    {
-        GetComponent<Rigidbody>().velocity = direction * velocity;        
-    }
-
     private void OnTriggerEnter(Collider other)
-    {
+    {    
+
         if (other.TryGetComponent<PlayerController>(out PlayerController playerController))
         {
-            
-                Debug.Log(playerController.ClientManager.Connection.ToString());
-                Debug.Log(base.Owner.ToString());
+            if (origin != playerController.gameObject)
+            {
                 playerController.TakeDamage(playerController);
+            }
+            else
+            {
+                Server_DestroyBullet();
+            }
         }
-
-        if( base.IsOwner)
+        else
+        {
             Server_DestroyBullet();
+        }
+        
+
     }
 
-    
     public void Server_DestroyBullet()
     {
         base.Despawn(gameObject);

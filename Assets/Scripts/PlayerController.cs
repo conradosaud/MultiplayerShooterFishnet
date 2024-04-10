@@ -125,8 +125,9 @@ public class PlayerController : NetworkBehaviour
 
         Transform instantiated = Instantiate(bulletPrefab, bulletPoint.position, Quaternion.Euler(cameraDirection));
         instantiated.GetComponent<Bullet>().direction = cameraDirection;
-        
-        ServerManager.Spawn(instantiated.gameObject);
+        instantiated.GetComponent<Bullet>().origin = gameObject;
+
+        Spawn(instantiated.gameObject);
 
         // Aguarda o tempo aqui pois não é possível usar IEnumerator no TargetRPC
         StartCoroutine(ResetShoot(conn));

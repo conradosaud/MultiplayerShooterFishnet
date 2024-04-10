@@ -151,7 +151,8 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 3169795487747648186}
   _networkObjectCache: {fileID: 3169795487747648186}
-  velocity: 100
+  origin: {fileID: 0}
+  velocity: 50
   lifeTime: 3
   direction: {x: 0, y: 0, z: 0}
 --- !u!114 &3169795487747648186
@@ -210,7 +211,7 @@ MonoBehaviour:
     Position: 1
     Rotation: 1
     Scale: 0
-  _interpolation: 1
+  _interpolation: 2
   _extrapolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
@@ -224,7 +225,7 @@ MonoBehaviour:
     X: 0
     Y: 0
     Z: 0
-  _synchronizeRotation: 0
+  _synchronizeRotation: 1
   _rotationSnapping:
     X: 0
     Y: 0
