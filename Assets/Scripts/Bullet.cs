@@ -1,5 +1,7 @@
 using FishNet;
 using FishNet.Connection;
+using FishNet.Example.Scened;
+using FishNet.Managing;
 using FishNet.Managing.Server;
 using FishNet.Object;
 using System;
@@ -10,7 +12,7 @@ using UnityEngine;
 public class Bullet : NetworkBehaviour
 {
 
-    public GameObject origin;
+    public NetworkObject nob;
 
     public float velocity = 5f;
     public float lifeTime = 3f;
@@ -29,12 +31,11 @@ public class Bullet : NetworkBehaviour
 
         if (other.TryGetComponent<PlayerController>(out PlayerController playerController))
         {
-            if (origin != playerController.gameObject)
+
+            if (nob.OwnerId != playerController.OwnerId)
             {
+                Debug.Log("Acertou diferente: bullet[" + nob.OwnerId + "] - alvo [" + playerController.OwnerId + "]");
                 playerController.TakeDamage(playerController);
-            }
-            else
-            {
                 Server_DestroyBullet();
             }
         }
@@ -43,7 +44,6 @@ public class Bullet : NetworkBehaviour
             Server_DestroyBullet();
         }
         
-
     }
 
     public void Server_DestroyBullet()

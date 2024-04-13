@@ -125,7 +125,7 @@ public class PlayerController : NetworkBehaviour
 
         Transform instantiated = Instantiate(bulletPrefab, bulletPoint.position, Quaternion.Euler(cameraDirection));
         instantiated.GetComponent<Bullet>().direction = cameraDirection;
-        instantiated.GetComponent<Bullet>().origin = gameObject;
+        instantiated.GetComponent<Bullet>().nob = GetComponent<NetworkObject>();
 
         Spawn(instantiated.gameObject);
 
