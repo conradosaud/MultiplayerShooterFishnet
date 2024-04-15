@@ -2469,9 +2469,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc4ae25f0d33c8749b6144b7570ae798, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 1
-  _addedNetworkObject: {fileID: 1334858359}
-  _networkObjectCache: {fileID: 1334858359}
 --- !u!1 &770981291
 GameObject:
   m_ObjectHideFlags: 0
@@ -3609,7 +3606,6 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 1334858358}
-  - {fileID: 757071138}
   <SerializedRootNetworkBehaviour>k__BackingField: {fileID: 0}
   <NestedRootNetworkBehaviours>k__BackingField: []
   SerializedTransformProperties:
@@ -5158,7 +5154,7 @@ MonoBehaviour:
     LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isSpawnable: 1
-  _isGlobal: 0
+  _isGlobal: 1
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}

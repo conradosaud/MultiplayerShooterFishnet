@@ -32,6 +32,12 @@ public class Bullet : NetworkBehaviour
         if (other.TryGetComponent<PlayerController>(out PlayerController playerController))
         {
 
+            if(nob == null)
+            {
+                Debug.Log("######### Não foi encontrado NetworkObject ma bala");
+                return;
+            }
+            
             if (nob.OwnerId != playerController.OwnerId)
             {
                 Debug.Log("Acertou diferente: bullet[" + nob.OwnerId + "] - alvo [" + playerController.OwnerId + "]");

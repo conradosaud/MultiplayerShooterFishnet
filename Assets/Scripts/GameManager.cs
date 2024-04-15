@@ -1,3 +1,4 @@
+using FishNet.Connection;
 using FishNet.Demo.AdditiveScenes;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
@@ -9,7 +10,7 @@ public class GameManager : NetworkBehaviour
 {
 
     public static GameManager instance;
-    public readonly SyncList<string> playerNames = new();
+    public readonly SyncDictionary<NetworkConnection, string> playerNames = new();
 
     private void Awake()
     {
@@ -21,23 +22,31 @@ public class GameManager : NetworkBehaviour
         "MagoDeEspada", "Tempestade", "RaioTrovão", "Zeus","PunhoDeFerro"
     };
 
-    public void AddPlayerName(GameObject player)
+    public void AddPlayerName(NetworkConnection conn)
     {
-        string name = GenerateName();
-        player.name = name;
-        playerNames.Add(name);
+        playerNames.Add(conn, GenerateName());
     }
 
     string GenerateName()
     {
-        string name;
-        do
-        {
-            name = names[Random.Range(0, names.Count)];
-        } 
-        while (playerNames.Contains(name));
 
-        return name;
+        string name = names[Random.Range(0, names.Count)];
+        bool found = false;
+
+        foreach ( var item in playerNames)
+        {
+            if( item.Value == name)
+            {
+                found = true;
+                break;
+            }
+        }
+
+        if (found == false)
+            return name;
+
+        return GenerateName();
+        
     }
 
 }
