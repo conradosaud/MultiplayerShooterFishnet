@@ -27,6 +27,11 @@ public class GameManager : NetworkBehaviour
         playerNames.Add(conn, GenerateName());
     }
 
+    public void RemovePlayerName(NetworkConnection conn)
+    {
+        playerNames.Remove(conn);
+    }
+
     string GenerateName()
     {
 

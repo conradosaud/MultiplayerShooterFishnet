@@ -20,6 +20,7 @@ public class PlayerNameText : NetworkBehaviour
 
     private void Update()
     {
-        transform.rotation = Quaternion.LookRotation(transform.position - Camera.main.transform.position);
+        if( Camera.main )
+            transform.rotation = Quaternion.LookRotation(transform.position - Camera.main.transform.position);
     }
 }

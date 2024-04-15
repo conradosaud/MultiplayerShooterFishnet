@@ -18,6 +18,13 @@ public class PlayerManager : NetworkBehaviour
         AddPlayer();
     }
 
+    public override void OnStopServer()
+    {
+        base.OnStopServer();
+        Debug.Log("--- alguem saiu, e foi:" + Owner);
+        RemovePlayer();
+    }
+
     public override void OnStartClient()
     {
         base.OnStartClient();
@@ -32,9 +39,15 @@ public class PlayerManager : NetworkBehaviour
     [Server]
     void AddPlayer()
     {
-        GameManager.instance.AddPlayerName(Owner);
+        GameManager.instance.AddPlayerName(base.Owner);
         UpdateUserboard();
-        //UpdateHeadUsername();
+    }
+
+    [Server]
+    void RemovePlayer()
+    {
+        GameManager.instance.RemovePlayerName(base.Owner);
+        UpdateUserboard();
     }
 
     [ObserversRpc(BufferLast = true)]
@@ -42,13 +55,12 @@ public class PlayerManager : NetworkBehaviour
     {
         HUDController.instance.UpdateUserboard();
     }
-    
+
     [ObserversRpc(BufferLast = true)]
     void UpdateHeadUsername()
     {
         if (GameManager.instance.playerNames.ContainsKey(Owner))
         {
-            Debug.Log(headUsernameText);
             headUsernameText.text = GameManager.instance.playerNames[Owner];
         }
     }
