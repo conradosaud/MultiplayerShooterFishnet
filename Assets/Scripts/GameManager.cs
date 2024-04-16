@@ -10,17 +10,17 @@ public class GameManager : NetworkBehaviour
 {
 
     public static GameManager instance;
-    public readonly SyncDictionary<NetworkConnection, string> playerNames = new();
+    public readonly SyncDictionary<NetworkConnection, string> playerNames = new(new SyncTypeSettings( WritePermission.ClientUnsynchronized) );
+
+    List<string> names = new List<string>(){
+        "Sombra", "Blitzkrieg", "Waifu", "Ghost", "VíboraCobra",
+        "MagoDeEspada", "Tempestade", "RaioTrovão", "Zeus","PunhoRápido"
+    };
 
     private void Awake()
     {
         instance = this;
     }
-
-    List<string> names = new List<string>(){
-        "Sombra", "Blitzkrieg", "Waifu", "Ghost", "VíboraCobra",
-        "MagoDeEspada", "Tempestade", "RaioTrovão", "Zeus","PunhoDeFerro"
-    };
 
     public void AddPlayerName(NetworkConnection conn)
     {
@@ -38,9 +38,9 @@ public class GameManager : NetworkBehaviour
         string name = names[Random.Range(0, names.Count)];
         bool found = false;
 
-        foreach ( var item in playerNames)
+        foreach ( var item in playerNames )
         {
-            if( item.Value == name)
+            if( item.Value == name) 
             {
                 found = true;
                 break;

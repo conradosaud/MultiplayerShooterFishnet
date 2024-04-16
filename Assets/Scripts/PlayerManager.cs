@@ -1,3 +1,4 @@
+using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
@@ -15,14 +16,22 @@ public class PlayerManager : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        AddPlayer();
+        GameManager.instance.AddPlayerName(base.Owner);
+        UpdateUserboard();
     }
 
     public override void OnStopServer()
     {
         base.OnStopServer();
-        Debug.Log("--- alguem saiu, e foi:" + Owner);
-        RemovePlayer();
+        GameManager.instance.RemovePlayerName(base.Owner);
+        //UpdateUserboard();
+    }
+
+    public override void OnStopNetwork()
+    {
+        base.OnStopNetwork();
+        GameManager.instance.RemovePlayerName(base.Owner);
+        //UpdateUserboard();
     }
 
     public override void OnStartClient()
@@ -36,25 +45,12 @@ public class PlayerManager : NetworkBehaviour
         headUsernameText = transform.Find("CanvasPlayerName").transform.Find("PlayerName").GetComponent<TextMeshProUGUI>();
     }
 
-    [Server]
-    void AddPlayer()
-    {
-        GameManager.instance.AddPlayerName(base.Owner);
-        UpdateUserboard();
-    }
-
-    [Server]
-    void RemovePlayer()
-    {
-        GameManager.instance.RemovePlayerName(base.Owner);
-        UpdateUserboard();
-    }
-
     [ObserversRpc(BufferLast = true)]
     void UpdateUserboard()
     {
         HUDController.instance.UpdateUserboard();
     }
+
 
     [ObserversRpc(BufferLast = true)]
     void UpdateHeadUsername()

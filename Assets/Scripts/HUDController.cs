@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class HUDController : MonoBehaviour
+public class HUDController : NetworkBehaviour
 {
 
     public static HUDController instance;

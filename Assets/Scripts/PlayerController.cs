@@ -62,6 +62,8 @@ public class PlayerController : NetworkBehaviour
     void Update()
     {
 
+        HUDController.instance.UpdateUserboard();
+
         if (!base.IsOwner)
             return;
 
