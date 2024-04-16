@@ -4,6 +4,7 @@ using FishNet.Object;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -32,7 +33,6 @@ public class PlayerController : NetworkBehaviour
     Camera playerCamera;
     Vector3 moveDirection = Vector3.zero;
 
-
     public override void OnStartClient()
     {
         base.OnStartClient();
@@ -41,11 +41,6 @@ public class PlayerController : NetworkBehaviour
         {
             IniciaController();
         }
-        else
-        {
-            GetComponent<PlayerController>().enabled = false;
-            transform.Find("Main Camera").gameObject.SetActive(false);
-        }
 
     }
 
@@ -53,6 +48,8 @@ public class PlayerController : NetworkBehaviour
     {
         cc = GetComponent<CharacterController>();
         playerCamera = transform.Find("Main Camera").GetComponent<Camera>();
+        playerCamera.gameObject.SetActive(true);
+        gameObject.name += "-" + Owner.ClientId;
 
         // Lock camera
         // Desabilitar para facilitar o desenvolvimento
@@ -64,6 +61,8 @@ public class PlayerController : NetworkBehaviour
 
     void Update()
     {
+
+        HUDController.instance.UpdateUserboard();
 
         if (!base.IsOwner)
             return;
@@ -77,7 +76,12 @@ public class PlayerController : NetworkBehaviour
         {
             Vector3 cameraDirection = playerCamera.transform.forward;
             canShoot = false;
-            Server_Shoot(cameraDirection, LocalConnection);
+            Server_Shoot(cameraDirection, Owner);
+        }
+
+        if( Input.GetKeyDown(KeyCode.V))
+        {
+            HUDController.lifeText.text = "opaa";
         }
 
         // Directions
@@ -117,15 +121,13 @@ public class PlayerController : NetworkBehaviour
         canShoot = true;
     }
 
-
     [ServerRpc]
     void Server_Shoot(Vector3 cameraDirection, NetworkConnection conn)
     {
 
         Transform instantiated = Instantiate(bulletPrefab, bulletPoint.position, Quaternion.Euler(cameraDirection));
-        instantiated.transform.parent = GameObject.Find("BulletPool").transform;
         instantiated.GetComponent<Bullet>().direction = cameraDirection;
-        instantiated.GetComponent<Bullet>().clientId = conn.ClientId;
+        instantiated.GetComponent<Bullet>().nob = GetComponent<NetworkObject>();
 
         Spawn(instantiated.gameObject);
 
@@ -137,42 +139,19 @@ public class PlayerController : NetworkBehaviour
             this.ResetShoot(conn);
         }
 
-        // Outra forma de realizar o tiro, com Raycast, mas sem projétil na scene
-        void ShootRaycast()
-        {
-
-            Vector3 position = playerCamera.transform.position;
-            Vector3 direction = playerCamera.transform.forward;
-
-            if (Physics.Raycast(position, direction, out RaycastHit hit))
-            {
-                Debug.Log(hit.transform.gameObject.name);
-            }
-        }
-
     }
 
- 
-    public void TakeDamage()
+    [ServerRpc(RequireOwnership = false)]
+    public void TakeDamage(PlayerController script)
     {
-        if (!base.IsOwner)
-            return;
-        healthPoints--;
-        HUDController.lifeText.text = healthPoints.ToString();
+        script.healthPoints--;
+        UpdateLifeDisplay(script.Owner, script.healthPoints.ToString());
     }
 
-    private void OnTriggerEnter(Collider other)
+    [TargetRpc]
+    void UpdateLifeDisplay(NetworkConnection conn, string value)
     {
-        return;
-        if (!base.IsOwner)
-            return;
-
-        if (other.TryGetComponent<Bullet>(out Bullet bullet) )
-        {
-            TakeDamage();
-            bullet.Server_DestroyBullet();
-        }
+        HUDController.lifeText.text = value;
     }
-
 
 }
