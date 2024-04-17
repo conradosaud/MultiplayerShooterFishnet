@@ -1,3 +1,4 @@
+using FishNet.Component.Spawning;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
@@ -9,6 +10,7 @@ public class GameManager : NetworkBehaviour
 {
 
     public static GameManager instance;
+    public GameObject defaultCamera;
     public readonly SyncDictionary<NetworkConnection, string> playerNames = new();
 
     List<string> names = new List<string>(){
@@ -19,6 +21,7 @@ public class GameManager : NetworkBehaviour
     private void Awake()
     {
         instance = this;
+        defaultCamera = GameObject.Find("DefaultCamera");
     }
 
     public override void OnStartServer()
