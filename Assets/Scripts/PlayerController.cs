@@ -54,7 +54,6 @@ public class PlayerController : NetworkBehaviour
             return;
 
         cc = GetComponent<CharacterController>();
-        GameManager.instance.defaultCamera.gameObject.SetActive(false);
         playerCamera = transform.Find("Main Camera").GetComponent<Camera>();
         playerCamera.gameObject.SetActive(true);
         gameObject.name += "-" + Owner.ClientId;
@@ -62,14 +61,12 @@ public class PlayerController : NetworkBehaviour
         GetMyName();
 
         HUDController.lifeText.text = "5";
-        //UpdateLifeDisplay(base.Owner, "5");
 
     }
 
     public override void OnStopClient()
     {
         base.OnStopClient();
-        GameManager.instance.defaultCamera.gameObject.SetActive(true);
     }
 
     void Update()
@@ -101,10 +98,10 @@ public class PlayerController : NetworkBehaviour
         moveDirection = (forward * directionZ) + (right * directionX);
         moveDirection *= moveSpeed;
 
-        if( Input.GetKeyDown(KeyCode.V))
-        {
-            VerifyIsDead(Owner);
-        }
+        //if( Input.GetKeyDown(KeyCode.V))
+        //{
+        //    VerifyIsDead(Owner);
+        //}
 
         // Player jump
         if( Input.GetKeyDown(KeyCode.Space) && cc.isGrounded)
@@ -130,18 +127,19 @@ public class PlayerController : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void VerifyIsDead(NetworkConnection conn)
+    public void VerifyIsDead(NetworkConnection conn, PlayerController script)
     {
-        if (healthPoints > 0)
-            return;
+        //Debug.Log(healthPoints);
+        //if (script.healthPoints > 0)
+        //    return;
 
         Server_DesactivatePlayer();
 
-        GameObject.Find("Canvas").transform.Find("HUD").transform.Find("Dead").GetComponent<Canvas>().enabled = true;
-        GameObject.Find("Canvas").transform.Find("HUD").transform.Find("Dead").transform.Find("Respawn").GetComponent<Button>().onClick.AddListener(() =>
-        {
-            Server_RespawnPlayer(conn);
-        });
+        transform.Find("CanvasDead").GetComponent<Canvas>().enabled = true;
+        //transform.Find("CanvasDead").transform.Find("Respawn").GetComponent<Button>().onClick.AddListener(() =>
+        //{
+        //    Server_RespawnPlayer(conn);
+        //});
 
     }
 
@@ -153,7 +151,6 @@ public class PlayerController : NetworkBehaviour
     [ObserversRpc]
     void DesactivatePlayer()
     {
-
         GetComponent<Renderer>().enabled = false;
         transform.Find("Visor").GetComponent<Renderer>().enabled = false;
         transform.Find("CanvasPlayerName").GetComponent<Canvas>().enabled = false;
@@ -162,14 +159,14 @@ public class PlayerController : NetworkBehaviour
     }
 
     [ServerRpc]
-    void Server_RespawnPlayer(NetworkConnection conn)
+    public void Server_RespawnPlayer()
     {
-        RespawnPlayer(conn);
+        RespawnPlayer();
     }
     [ObserversRpc]
-    void RespawnPlayer(NetworkConnection conn)
+    void RespawnPlayer()
     {
-        GameObject.Find("Canvas").transform.Find("HUD").transform.Find("Dead").GetComponent<Canvas>().enabled = false;
+        transform.Find("CanvasDead").GetComponent<Canvas>().enabled = false;
         GetComponent<Renderer>().enabled = true;
         transform.Find("Visor").GetComponent<Renderer>().enabled = true;
         transform.Find("CanvasPlayerName").GetComponent<Canvas>().enabled = true;
@@ -210,7 +207,8 @@ public class PlayerController : NetworkBehaviour
     {
         script.healthPoints--;
         UpdateLifeDisplay(script.Owner, script.healthPoints.ToString());
-        script.VerifyIsDead(script.Owner);
+        if(script.healthPoints <= 0 )
+            VerifyIsDead(script.Owner, script);
     }
 
     [TargetRpc]
