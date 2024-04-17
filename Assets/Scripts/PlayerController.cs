@@ -11,6 +11,9 @@ using UnityEngine;
 public class PlayerController : NetworkBehaviour
 {
 
+    string username;
+    TextMeshProUGUI headUsernameText;
+
     public Transform bulletPrefab;
     public Transform bulletPoint;
 
@@ -33,36 +36,30 @@ public class PlayerController : NetworkBehaviour
     Camera playerCamera;
     Vector3 moveDirection = Vector3.zero;
 
+    void Awake()
+    {
+        headUsernameText = transform.Find("CanvasPlayerName").transform.Find("PlayerName").GetComponent<TextMeshProUGUI>();
+    }
+
     public override void OnStartClient()
     {
         base.OnStartClient();
 
-        if( base.IsOwner)
-        {
-            IniciaController();
-        }
+        if (!base.IsOwner)
+            return;
 
-    }
-
-    void IniciaController()
-    {
         cc = GetComponent<CharacterController>();
         playerCamera = transform.Find("Main Camera").GetComponent<Camera>();
         playerCamera.gameObject.SetActive(true);
         gameObject.name += "-" + Owner.ClientId;
 
-        // Lock camera
-        // Desabilitar para facilitar o desenvolvimento
-        //Cursor.lockState = CursorLockMode.Locked;
-        //Cursor.visible = false;
+        GetMyName();
 
     }
 
 
     void Update()
     {
-
-        HUDController.instance.UpdateUserboard();
 
         if (!base.IsOwner)
             return;
@@ -154,4 +151,16 @@ public class PlayerController : NetworkBehaviour
         HUDController.lifeText.text = value;
     }
 
+    [ServerRpc]
+    void GetMyName()
+    {
+        username = GameManager.instance.GetMyName(Owner);
+        ShowMyNameOnHead(username);
+    }
+
+    [ObserversRpc(ExcludeOwner = true, BufferLast = true)]
+    void ShowMyNameOnHead(string username)
+    {
+        headUsernameText.text = username;
+    }
 }

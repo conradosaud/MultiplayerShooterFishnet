@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class HUDController : NetworkBehaviour
+public class HUDController : MonoBehaviour
 {
 
     public static HUDController instance;
@@ -27,13 +27,12 @@ public class HUDController : NetworkBehaviour
         playerNames = userboard.Find("PlayerNames").GetComponent<TextMeshProUGUI>();
     }
 
-
-    public void UpdateUserboard()
+    public void UpdateUserboard(string[] names)
     {
         playerNames.text = "<b>Players:</b>";
-        foreach (var playerName in GameManager.instance.playerNames)
+        for (int i = 0; i < names.Length; i++)
         {
-            playerNames.text += "<br>"+playerName.Value;
+            playerNames.text += "<br>" + names[i];
         }
     }
 

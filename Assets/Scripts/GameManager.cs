@@ -1,16 +1,15 @@
 using FishNet.Connection;
-using FishNet.Demo.AdditiveScenes;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameManager : NetworkBehaviour
 {
 
     public static GameManager instance;
-    public readonly SyncDictionary<NetworkConnection, string> playerNames = new(new SyncTypeSettings( WritePermission.ClientUnsynchronized) );
+    public readonly SyncDictionary<NetworkConnection, string> playerNames = new();
 
     List<string> names = new List<string>(){
         "Sombra", "Blitzkrieg", "Waifu", "Ghost", "VíboraCobra",
@@ -22,14 +21,42 @@ public class GameManager : NetworkBehaviour
         instance = this;
     }
 
-    public void AddPlayerName(NetworkConnection conn)
+    public override void OnStartServer()
     {
-        playerNames.Add(conn, GenerateName());
+        base.OnStartServer();
+        playerNames.Clear(); // limpar lixo de conexões anteriores
     }
 
-    public void RemovePlayerName(NetworkConnection conn)
+    public override void OnSpawnServer(NetworkConnection connection)
     {
-        playerNames.Remove(conn);
+        base.OnSpawnServer(connection);
+
+        playerNames.Add(connection, GenerateName());
+        UpdateUserboard(playerNames.Values.ToArray());
+    }
+
+    public override void OnDespawnServer(NetworkConnection connection)
+    {
+        base.OnSpawnServer(connection);
+
+        playerNames.Remove(connection);
+        UpdateUserboard(playerNames.Values.ToArray());
+    }
+
+    [ObserversRpc(BufferLast = true)]
+    void UpdateUserboard(string[] names)
+    {
+        HUDController.instance.UpdateUserboard( names );
+    }
+
+    public string GetMyName(NetworkConnection conn)
+    {
+        foreach( var item in playerNames)
+        {
+            if( item.Key == conn )
+                return item.Value;
+        }
+        return "Unkwon";
     }
 
     string GenerateName()

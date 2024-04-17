@@ -2456,8 +2456,6 @@ GameObject:
   m_Component:
   - component: {fileID: 757071137}
   - component: {fileID: 757071138}
-  - component: {fileID: 757071140}
-  - component: {fileID: 757071139}
   m_Layer: 5
   m_Name: HUD
   m_TagString: Untagged
@@ -2499,58 +2497,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc4ae25f0d33c8749b6144b7570ae798, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 0
-  _addedNetworkObject: {fileID: 1334858359}
-  _networkObjectCache: {fileID: 757071140}
---- !u!114 &757071139
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 757071136}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _overrideType: 3
-  _updateHostVisibility: 1
-  _observerConditions: []
---- !u!114 &757071140
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 757071136}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 1
-  <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours:
-  - {fileID: 757071138}
-  <SerializedRootNetworkBehaviour>k__BackingField: {fileID: 1334858358}
-  <NestedRootNetworkBehaviours>k__BackingField: []
-  SerializedTransformProperties:
-    Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 1}
-    LocalScale: {x: 1, y: 1, z: 1}
-  _isNetworked: 1
-  _isSpawnable: 1
-  _isGlobal: 0
-  _initializeOrder: 0
-  _defaultDespawnType: 0
-  NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
-  <SpawnableCollectionId>k__BackingField: 0
-  _scenePathHash: 584410112
-  <SceneId>k__BackingField: 2510022320021169331
-  <AssetPathHash>k__BackingField: 0
 --- !u!1 &770981291
 GameObject:
   m_ObjectHideFlags: 0
@@ -3689,8 +3635,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 1334858358}
   <SerializedRootNetworkBehaviour>k__BackingField: {fileID: 0}
-  <NestedRootNetworkBehaviours>k__BackingField:
-  - {fileID: 757071140}
+  <NestedRootNetworkBehaviours>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 473.5, y: 266.5, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 1}
@@ -5496,9 +5441,9 @@ CanvasRenderer:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 178431634}
+  - {fileID: 1885908100}
   - {fileID: 705507995}
   - {fileID: 527367452}
-  - {fileID: 178431634}
   - {fileID: 1334858356}
   - {fileID: 1547800082}
-  - {fileID: 1885908100}
