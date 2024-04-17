@@ -533,6 +533,31 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 168536136}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &176545979 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7443408887813606051, guid: 0b650fca685f2eb41a86538aa883e4c1, type: 3}
+  m_PrefabInstance: {fileID: 178431634}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &176545980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 176545979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f48f002b825cbd45a19bd96d90f9edb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dontRoute: 0
+  _unreliableMtu: 1023
+  _ipv4BindAddress: 
+  _enableIpv6: 1
+  _ipv6BindAddress: 
+  _port: 7770
+  _maximumClients: 4095
+  _clientAddress: localhost
 --- !u!1001 &178431634
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -616,7 +641,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7443408887813606051, guid: 0b650fca685f2eb41a86538aa883e4c1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 176545980}
   m_SourcePrefab: {fileID: 100100000, guid: 0b650fca685f2eb41a86538aa883e4c1, type: 3}
 --- !u!1 &178932581
 GameObject:
@@ -2471,9 +2499,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc4ae25f0d33c8749b6144b7570ae798, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 1
+  _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1334858359}
-  _networkObjectCache: {fileID: 1334858359}
+  _networkObjectCache: {fileID: 757071140}
 --- !u!114 &757071139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2502,10 +2530,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 0
+  <ComponentIndex>k__BackingField: 1
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours: []
-  <SerializedRootNetworkBehaviour>k__BackingField: {fileID: 0}
+  _networkBehaviours:
+  - {fileID: 757071138}
+  <SerializedRootNetworkBehaviour>k__BackingField: {fileID: 1334858358}
   <NestedRootNetworkBehaviours>k__BackingField: []
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
@@ -3659,9 +3688,9 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: 1334858358}
-  - {fileID: 757071138}
   <SerializedRootNetworkBehaviour>k__BackingField: {fileID: 0}
-  <NestedRootNetworkBehaviours>k__BackingField: []
+  <NestedRootNetworkBehaviours>k__BackingField:
+  - {fileID: 757071140}
   SerializedTransformProperties:
     Position: {x: 473.5, y: 266.5, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 1}
