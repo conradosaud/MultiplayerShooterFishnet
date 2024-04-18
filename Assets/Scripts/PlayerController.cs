@@ -44,6 +44,8 @@ public class PlayerController : NetworkBehaviour
     void Awake()
     {
         headUsernameText = transform.Find("CanvasPlayerName").transform.Find("PlayerName").GetComponent<TextMeshProUGUI>();
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = false;
     }
 
     public override void OnStartClient()
@@ -58,6 +60,9 @@ public class PlayerController : NetworkBehaviour
         playerCamera.gameObject.SetActive(true);
         gameObject.name += "-" + Owner.ClientId;
         GameObject.Find("Canvas").transform.Find("HUD").transform.Find("Slider").GetComponent<Slider>().onValueChanged.AddListener((value) => turnSpeed = value);
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
         GetMyName();
 
