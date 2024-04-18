@@ -127,15 +127,18 @@ public class PlayerController : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void VerifyIsDead(NetworkConnection conn, PlayerController script)
+    public void Die(NetworkConnection conn)
     {
-        //Debug.Log(healthPoints);
-        //if (script.healthPoints > 0)
-        //    return;
 
-        Server_DesactivatePlayer();
+        if (healthPoints > 0)
+        {
+            Debug.Log("Vida ainda: " + healthPoints);
+            return;
+        }
 
         transform.Find("CanvasDead").GetComponent<Canvas>().enabled = true;
+        Server_DesactivatePlayer();
+
         //transform.Find("CanvasDead").transform.Find("Respawn").GetComponent<Button>().onClick.AddListener(() =>
         //{
         //    Server_RespawnPlayer(conn);
@@ -148,13 +151,13 @@ public class PlayerController : NetworkBehaviour
     {
         DesactivatePlayer();
     }
-    [ObserversRpc]
+    [ObserversRpc(BufferLast = true)]
     void DesactivatePlayer()
     {
         GetComponent<Renderer>().enabled = false;
         transform.Find("Visor").GetComponent<Renderer>().enabled = false;
         transform.Find("CanvasPlayerName").GetComponent<Canvas>().enabled = false;
-        GetComponent<Collider>().enabled = false;
+        GetComponent<CharacterController>().enabled = false;
         isDead = true;
     }
 
@@ -163,17 +166,17 @@ public class PlayerController : NetworkBehaviour
     {
         RespawnPlayer();
     }
-    [ObserversRpc]
+    [ObserversRpc(BufferLast = true)]
     void RespawnPlayer()
     {
         transform.Find("CanvasDead").GetComponent<Canvas>().enabled = false;
         GetComponent<Renderer>().enabled = true;
         transform.Find("Visor").GetComponent<Renderer>().enabled = true;
         transform.Find("CanvasPlayerName").GetComponent<Canvas>().enabled = true;
-        GetComponent<Collider>().enabled = true;
+        GetComponent<CharacterController>().enabled = true;
         isDead = false;
         healthPoints = 5;
-        UpdateLifeDisplay(Owner, healthPoints.ToString());
+        HUDController.lifeText.text = healthPoints.ToString();
     }
 
     [TargetRpc]
@@ -202,19 +205,24 @@ public class PlayerController : NetworkBehaviour
 
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void TakeDamage(PlayerController script)
+    
+    [TargetRpc]
+    public void TakeDamage(NetworkConnection conn)
     {
-        script.healthPoints--;
-        UpdateLifeDisplay(script.Owner, script.healthPoints.ToString());
-        if(script.healthPoints <= 0 )
-            VerifyIsDead(script.Owner, script);
+        Server_TakeDamage(this);
+    }
+    [ServerRpc]
+    public void Server_TakeDamage(PlayerController script)
+    {
+        UpdateLifeDisplay(Owner);
+        Die(script.Owner);
     }
 
     [TargetRpc]
-    void UpdateLifeDisplay(NetworkConnection conn, string value)
+    void UpdateLifeDisplay(NetworkConnection conn)
     {
-        HUDController.lifeText.text = value;
+        healthPoints--;
+        HUDController.lifeText.text = healthPoints.ToString();
     }
 
     [ServerRpc]
