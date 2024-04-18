@@ -57,6 +57,7 @@ public class PlayerController : NetworkBehaviour
         playerCamera = transform.Find("Main Camera").GetComponent<Camera>();
         playerCamera.gameObject.SetActive(true);
         gameObject.name += "-" + Owner.ClientId;
+        GameObject.Find("Canvas").transform.Find("HUD").transform.Find("Slider").GetComponent<Slider>().onValueChanged.AddListener((value) => turnSpeed = value);
 
         GetMyName();
 
@@ -83,7 +84,7 @@ public class PlayerController : NetworkBehaviour
         float directionZ = Input.GetAxis("Vertical");
         float directionY = moveDirection.y;
 
-        if( Input.GetKey(KeyCode.Mouse0) && canShoot )
+        if( ( Input.GetKey(KeyCode.Mouse0) || Input.GetKey(KeyCode.Joystick1Button5) ) && canShoot )
         {
             Vector3 cameraDirection = playerCamera.transform.forward;
             canShoot = false;
@@ -104,7 +105,7 @@ public class PlayerController : NetworkBehaviour
         //}
 
         // Player jump
-        if( Input.GetKeyDown(KeyCode.Space) && cc.isGrounded)
+        if( ( Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Joystick1Button2) ) && cc.isGrounded)
         {
             moveDirection.y = jumpForce;
         }
@@ -123,6 +124,11 @@ public class PlayerController : NetworkBehaviour
         rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
         playerCamera.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
         transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * turnSpeed, 0);
+
+    }
+
+    public void ChangeSensitivy(float value)
+    {
 
     }
 
