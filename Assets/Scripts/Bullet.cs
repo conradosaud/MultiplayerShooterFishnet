@@ -41,7 +41,7 @@ public class Bullet : NetworkBehaviour
             if (nob.OwnerId != playerController.OwnerId)
             {
                 Debug.Log("Acertou diferente: bullet[" + nob.OwnerId + "] - alvo [" + playerController.OwnerId + "]");
-                playerController.TakeDamage(playerController.Owner);
+                playerController.Target_TakeDamage(playerController.Owner);
                 Server_DestroyBullet();
             }
         }

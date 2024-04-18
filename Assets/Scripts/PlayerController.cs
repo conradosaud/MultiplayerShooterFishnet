@@ -44,8 +44,6 @@ public class PlayerController : NetworkBehaviour
     void Awake()
     {
         headUsernameText = transform.Find("CanvasPlayerName").transform.Find("PlayerName").GetComponent<TextMeshProUGUI>();
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = false;
     }
 
     public override void OnStartClient()
@@ -55,45 +53,29 @@ public class PlayerController : NetworkBehaviour
         if (!base.IsOwner)
             return;
 
-        cc = GetComponent<CharacterController>();
-        playerCamera = transform.Find("Main Camera").GetComponent<Camera>();
-        playerCamera.gameObject.SetActive(true);
-        gameObject.name += "-" + Owner.ClientId;
-        GameObject.Find("Canvas").transform.Find("HUD").transform.Find("Slider").GetComponent<Slider>().onValueChanged.AddListener((value) => turnSpeed = value);
+        InitializePlayer();
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
-        GetMyName();
-
-        HUDController.lifeText.text = "5";
-
-    }
-
-    public override void OnStopClient()
-    {
-        base.OnStopClient();
     }
 
     void Update()
     {
 
-        if (!base.IsOwner)
+        if ( base.IsOwner == false )
             return;
 
-        if (isDead)
+        if ( isDead == true )
             return;
 
-        // Inputs
+        // Simple player inputs
         float directionX = Input.GetAxis("Horizontal");
         float directionZ = Input.GetAxis("Vertical");
         float directionY = moveDirection.y;
 
-        if( ( Input.GetKey(KeyCode.Mouse0) || Input.GetKey(KeyCode.Joystick1Button5) ) && canShoot )
+        if( canShoot == true && ( Input.GetKey(KeyCode.Mouse0) || Input.GetKey(KeyCode.Joystick1Button5) ) )
         {
-            Vector3 cameraDirection = playerCamera.transform.forward;
             canShoot = false;
-            Server_Shoot(cameraDirection, Owner);
+            Vector3 cameraDirection = playerCamera.transform.forward;
+            Server_Shoot(Owner, cameraDirection);
         }
 
         // Directions
@@ -104,13 +86,8 @@ public class PlayerController : NetworkBehaviour
         moveDirection = (forward * directionZ) + (right * directionX);
         moveDirection *= moveSpeed;
 
-        //if( Input.GetKeyDown(KeyCode.V))
-        //{
-        //    VerifyIsDead(Owner);
-        //}
-
         // Player jump
-        if( ( Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Joystick1Button2) ) && cc.isGrounded)
+        if( cc.isGrounded == true && ( Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Joystick1Button2) ) )
         {
             moveDirection.y = jumpForce;
         }
@@ -132,54 +109,24 @@ public class PlayerController : NetworkBehaviour
 
     }
 
-    public void ChangeSensitivy(float value)
+    void InitializePlayer()
     {
 
-    }
+        // --- First part: initialize player components and settings
 
-    [TargetRpc]
-    public void Die(NetworkConnection conn)
-    {
+        cc = GetComponent<CharacterController>();
+        playerCamera = transform.Find("Main Camera").GetComponent<Camera>();
+        playerCamera.gameObject.SetActive(true);
+        GameObject.Find("Canvas").transform.Find("HUD").transform.Find("Slider").GetComponent<Slider>().onValueChanged.AddListener((value) => turnSpeed = value);
 
-        if (healthPoints > 0)
-        {
-            Debug.Log("Vida ainda: " + healthPoints);
-            return;
-        }
+        //Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.visible = false;
 
-        transform.Find("CanvasDead").GetComponent<Canvas>().enabled = true;
-        Server_DesactivatePlayer();
+        Server_GetMyName();
+        //HUDController.lifeText.text = "5";
 
-        //transform.Find("CanvasDead").transform.Find("Respawn").GetComponent<Button>().onClick.AddListener(() =>
-        //{
-        //    Server_RespawnPlayer(conn);
-        //});
+        // --- Second part: used by respawn player after die
 
-    }
-
-    [ServerRpc]
-    void Server_DesactivatePlayer()
-    {
-        DesactivatePlayer();
-    }
-    [ObserversRpc(BufferLast = true)]
-    void DesactivatePlayer()
-    {
-        GetComponent<Renderer>().enabled = false;
-        transform.Find("Visor").GetComponent<Renderer>().enabled = false;
-        transform.Find("CanvasPlayerName").GetComponent<Canvas>().enabled = false;
-        GetComponent<CharacterController>().enabled = false;
-        isDead = true;
-    }
-
-    [ServerRpc]
-    public void Server_RespawnPlayer()
-    {
-        RespawnPlayer();
-    }
-    [ObserversRpc(BufferLast = true)]
-    void RespawnPlayer()
-    {
         transform.Find("CanvasDead").GetComponent<Canvas>().enabled = false;
         GetComponent<Renderer>().enabled = true;
         transform.Find("Visor").GetComponent<Renderer>().enabled = true;
@@ -188,16 +135,61 @@ public class PlayerController : NetworkBehaviour
         isDead = false;
         healthPoints = 5;
         HUDController.lifeText.text = healthPoints.ToString();
+
     }
 
-    [TargetRpc]
-    void ResetShoot(NetworkConnection conn)
+    public void DesactivatePlayer()
     {
-        canShoot = true;
+        isDead = true;
+        GetComponent<Renderer>().enabled = false;
+        transform.Find("Visor").GetComponent<Renderer>().enabled = false;
+        transform.Find("CanvasPlayerName").GetComponent<Canvas>().enabled = false;
+        GetComponent<CharacterController>().enabled = false;
+    }
+
+    // -------------------------------------------------------------------------------
+    // Network section
+    // -------------------------------------------------------------------------------
+
+    [TargetRpc]
+    public void Target_CheckAndDie(NetworkConnection conn)
+    {
+
+        if (healthPoints > 0)
+        {
+            return;
+        }
+
+        transform.Find("CanvasDead").GetComponent<Canvas>().enabled = true;
+        Server_DesactivatePlayer();
+
     }
 
     [ServerRpc]
-    void Server_Shoot(Vector3 cameraDirection, NetworkConnection conn)
+    void Server_DesactivatePlayer()
+    {
+        Observers_DesactivatePlayer();
+    }
+    [ObserversRpc(BufferLast = true)]
+    void Observers_DesactivatePlayer()
+    {
+        DesactivatePlayer();
+    }
+
+    [ServerRpc]
+    public void Server_RespawnPlayer()
+    {
+        Observers_RespawnPlayer();
+    }
+    [ObserversRpc(BufferLast = true)]
+    void Observers_RespawnPlayer()
+    {
+        InitializePlayer();  
+    }
+
+
+    [ServerRpc]
+    void Server_Shoot(NetworkConnection conn, Vector3 cameraDirection)
     {
 
         Transform instantiated = Instantiate(bulletPrefab, bulletPoint.position, Quaternion.Euler(cameraDirection));
@@ -206,45 +198,49 @@ public class PlayerController : NetworkBehaviour
 
         Spawn(instantiated.gameObject);
 
-        // Aguarda o tempo aqui pois não é possível usar IEnumerator no TargetRPC
+        // Wait the time there cause isnt possible use IEnumerator on TargeRpc
         StartCoroutine(ResetShoot(conn));
         IEnumerator ResetShoot(NetworkConnection conn)
         {
             yield return new WaitForSeconds(shootFrequency);
-            this.ResetShoot(conn);
+            Target_ResetShoot(conn);
         }
 
     }
-
-    
     [TargetRpc]
-    public void TakeDamage(NetworkConnection conn)
+    void Target_ResetShoot(NetworkConnection conn)
+    {
+        canShoot = true;
+    }
+
+
+    [TargetRpc]
+    public void Target_TakeDamage(NetworkConnection conn)
     {
         Server_TakeDamage(this);
     }
     [ServerRpc]
     public void Server_TakeDamage(PlayerController script)
     {
-        UpdateLifeDisplay(Owner);
-        Die(script.Owner);
+        Target_UpdateLifeDisplay(Owner);
+        Target_CheckAndDie(script.Owner);
     }
 
     [TargetRpc]
-    void UpdateLifeDisplay(NetworkConnection conn)
+    void Target_UpdateLifeDisplay(NetworkConnection conn)
     {
         healthPoints--;
         HUDController.lifeText.text = healthPoints.ToString();
     }
 
     [ServerRpc]
-    void GetMyName()
+    void Server_GetMyName()
     {
         username = GameManager.instance.GetMyName(Owner);
-        ShowMyNameOnHead(username);
+        Oberservers_ShowMyNameOnHead(username);
     }
-
     [ObserversRpc(ExcludeOwner = true, BufferLast = true)]
-    void ShowMyNameOnHead(string username)
+    void Oberservers_ShowMyNameOnHead(string username)
     {
         headUsernameText.text = username;
     }
